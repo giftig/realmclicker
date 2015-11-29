@@ -3,7 +3,7 @@ package com.xantoria.realmclicker
 import java.awt.Robot
 import java.awt.event.InputEvent
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.global
 import scala.concurrent.Future
 
@@ -14,6 +14,7 @@ import scala.concurrent.Future
 class Clicker(repeatDelay: Duration, printTime: Option[Duration] = None) {
   private implicit val ec = global
   private val repeatDelayMillis: Long = repeatDelay.toMillis
+  private val printTimeMillis: Option[Long] = printTime map { _.toMillis }
 
   /**
    * Click for `duration` ms after waiting `delay` ms to allow the user time to position
@@ -21,34 +22,27 @@ class Clicker(repeatDelay: Duration, printTime: Option[Duration] = None) {
   def click(delay: Duration, duration: Duration): Unit = {
     val durationMillis = duration.toMillis
     Thread.sleep(delay.toMillis)
+
     var r = new Robot()
 
-    /*
-     * Print every `printTime` if provided
-     * Note that since this is completely asynchronous and doesn't factor in the length of time
-     * taken for the parts of the main loop which aren't sleeps, this may not be accurate over
-     * a long duration.
-     */
-    printTime foreach {
-      printDelay: Duration  => Future {
-        val printDelayMillis = printDelay.toMillis
-        (0 to (durationMillis / printDelayMillis).toInt) foreach {
-          i: Int => {
-            val elapsed = i * printDelay
-            val remaining = duration - elapsed
-            println(s"$elapsed elapsed, $remaining remaining")
-            Thread.sleep(printDelayMillis)
-          }
+    (0 to durationMillis.toInt) foreach {
+      tick: Int => {
+        if (tick % repeatDelayMillis == 0) {
+          r.mousePress(InputEvent.BUTTON1_DOWN_MASK)
+          r.mouseRelease(InputEvent.BUTTON1_DOWN_MASK)
         }
-      }
-    }
 
-    (0 to (duration / repeatDelay).toInt) foreach {
-      _ => {
-        r.mousePress(InputEvent.BUTTON1_DOWN_MASK)
-        r.mouseRelease(InputEvent.BUTTON1_DOWN_MASK)
-        Thread.sleep(repeatDelayMillis)
+        printTimeMillis foreach {
+          case i: Long if tick % i == 0 => {
+            val elapsed = tick / 1000
+            val remaining = (durationMillis - tick) / 1000
+            print(s"${elapsed}s elapsed, ${remaining}s remaining          \r")
+          }
+          case _ => ()
+        }
+        Thread.sleep(1)
       }
     }
+    println("\nDone!")
   }
 }
