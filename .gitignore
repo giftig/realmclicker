@@ -1,0 +1,9 @@
+# Maven
+/build
+
+# JVM
+.class
+
+# Vim
+*.swp
+*.swo
