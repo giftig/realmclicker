@@ -31,7 +31,7 @@ Use [Maven](https://maven.apache.org/)
 For example, to wait 1s and then click 50 times per second for 25 seconds, indicating progress every second:
 
     java -jar realmgrinder-1.0.jar \
-      --initial-delay 1s
-      --repeat-delay 20ms
-      --print-delay 1s
+      --initial-delay 1s \
+      --repeat-delay 20ms \
+      --print-delay 1s \
       --duration 25s
