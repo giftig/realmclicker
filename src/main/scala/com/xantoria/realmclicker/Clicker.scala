@@ -43,7 +43,6 @@ class Clicker(repeatDelay: Duration, printTime: Option[Duration] = None) {
       }
     }
 
-    println("Should start clicking now...")
     (0 to (duration / repeatDelay).toInt) foreach {
       _ => {
         r.mousePress(InputEvent.BUTTON1_DOWN_MASK)
