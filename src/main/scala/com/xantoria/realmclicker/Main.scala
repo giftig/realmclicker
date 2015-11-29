@@ -11,7 +11,7 @@ case class Config(
 
 object Main {
   val optionParser = new scopt.OptionParser[Config]("Realm Clicker") {
-    head("Realm Clicker", "0.1")
+    head("Realm Clicker", "0.2")
 
     opt[String]('i', "initial-delay") action {
       (initialDelay, c) => c.copy(initialDelay = Duration(initialDelay))
