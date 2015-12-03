@@ -16,6 +16,16 @@ class Clicker(repeatDelay: Duration, printTime: Option[Duration] = None) {
   private val repeatDelayMillis: Long = repeatDelay.toMillis
   private val printTimeMillis: Option[Long] = printTime map { _.toMillis }
 
+  val buttonCode = {
+    val Version6 = """^1\.6.*$""".r
+    val Version7 = """^1\.7.*$""".r
+    System.getProperty("java.version") match {
+      case Version6() => InputEvent.BUTTON1_MASK
+      case Version7() => InputEvent.BUTTON1_DOWN_MASK
+      case v: String => throw new RuntimeException(s"Unsupported java version: $v")
+    }
+  }
+
   /**
    * Click for `duration` ms after waiting `delay` ms to allow the user time to position
    */
@@ -28,8 +38,8 @@ class Clicker(repeatDelay: Duration, printTime: Option[Duration] = None) {
     (0 to durationMillis.toInt) foreach {
       tick: Int => {
         if (tick % repeatDelayMillis == 0) {
-          r.mousePress(InputEvent.BUTTON1_DOWN_MASK)
-          r.mouseRelease(InputEvent.BUTTON1_DOWN_MASK)
+          r.mousePress(buttonCode)
+          r.mouseRelease(buttonCode)
         }
 
         printTimeMillis foreach {
