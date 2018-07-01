@@ -18,11 +18,12 @@ class Clicker(repeatDelay: Duration, printTime: Option[Duration] = None) {
 
   val buttonCode = {
     val Version6 = """^1\.6.*$""".r
-    val Version7 = """^1\.7.*$""".r
+    val EarlierVersion = """^1\.[1-5].*$""".r
+
     System.getProperty("java.version") match {
       case Version6() => InputEvent.BUTTON1_MASK
-      case Version7() => InputEvent.BUTTON1_DOWN_MASK
-      case v: String => throw new RuntimeException(s"Unsupported java version: $v")
+      case EarlierVersion(v) => throw new RuntimeException(s"Unsupported java version: $v")
+      case _ => InputEvent.BUTTON1_DOWN_MASK
     }
   }
 
